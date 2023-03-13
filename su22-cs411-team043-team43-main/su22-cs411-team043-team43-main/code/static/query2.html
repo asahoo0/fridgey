@@ -1,0 +1,36 @@
+<html>
+<head>
+<style>
+table, th, td {
+  border: 0.9px inset;
+}
+</style>
+</head>
+<body>
+<table id='accounts'>
+<tr><th>FirstName</th><th>LastName</th><th>DishCount</th></tr>
+</table>
+<form action = "index.html">
+      	<button type="submit">Back</button>
+ </form>
+<script>
+        function getQuery2() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200) {
+                                let resp = JSON.parse(xhttp.responseText);
+                                console.log(resp);
+                                let content = '<tr><th><b>FirstName</b></th><th>LastName</th><th>DishCount</th></tr>';
+                                resp['users'].forEach(x=>{
+                                content += '<tr><td>'+ x['UserFN'] +'</td><td>'+ x['UserLN'] +'</td><td>'+ x['dishCount'] +'</td></tr>'
+                               });
+                                document.getElementById("accounts").innerHTML = content;
+                        }
+                };
+                xhttp.open("GET", "/getQuery2", true);
+                xhttp.send();
+        }
+        getQuery2();
+</script>
+</body>
+</html>

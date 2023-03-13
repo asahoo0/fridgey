@@ -1,0 +1,66 @@
+DROP PROCEDURE IF EXISTS Result;
+DELIMITER //
+CREATE PROCEDURE Result()
+begin
+    declare varUserId INT;
+    declare varUserId2 INT;
+    declare varUserFN VARCHAR(255);
+    declare varUserLN VARCHAR(255);
+    declare varCalorieRating VARCHAR(255);
+    declare varAverageScore REAL;
+    declare varCombinedScore VARCHAR(255);
+    declare varCalorie INT;
+    declare loop_exit boolean default false;
+    declare cursor1 cursor for (select UserId, UserFN,UserLN, avg(Calories) from Dish natural join Creates natural join User group by User.UserId);
+    declare cursor2 cursor for(select UserId, avg(Score) from Rating natural join User natural join Creates group by User.UserId);
+    declare continue handler for not found set loop_exit = true;
+    drop table if exists FinalTable;
+    create table FinalTable(
+    UserId INT primary key,
+    UserFN VARCHAR(255),
+    UserLN VARCHAR(255), 
+    CalorieRating VARCHAR(255),
+    CombinedRating VARCHAR(255)
+    );
+    
+    open cursor1;
+        cloop: loop
+            fetch cursor1 into varUserId, varUserFN, varUserLN, varCalorie;
+            if loop_exit then
+                leave cloop;
+            end if;
+            if varCalorie <= 500 then
+                set varCalorieRating = 'Low Calorie',varCombinedScore = 'Low Calorie';
+            elseif varCalorie <= 1300 then
+                set varCalorieRating = 'Medium Calorie',varCombinedScore = 'Low Calorie';
+            elseif varAverageScore > 1300 then
+                set varCalorieRating = 'High Calorie',varCombinedScore = 'Low Calorie';
+            end if;
+            
+            insert into FinalTable values(varUserId, varUserFN, varUserLN, varCalorieRating,varCombinedScore);
+    
+        end loop cloop;
+    close cursor1;
+    open cursor2;
+    begin
+    declare loop2_exit boolean default false;
+    declare continue handler for not found set loop2_exit = true;
+    cloop2: loop
+    fetch cursor2 into varUserId2,varAverageScore;
+            if loop2_exit then
+                leave cloop2;
+	    end if;
+            if varAverageScore <= 4 then
+                set varCombinedScore = 'Low Ranking User';
+            elseif varAverageScore <= 6 then
+                set varCombinedScore = 'Medium Ranking User';
+            elseif varAverageScore > 6 then
+                set varCombinedScore = 'High Ranking User';
+            end if;
+	    UPDATE FinalTable set CombinedRating = varCombinedScore where UserId = varUserId2;
+
+    end loop cloop2;
+    close cursor2;
+end;
+end//
+DELIMITER ;

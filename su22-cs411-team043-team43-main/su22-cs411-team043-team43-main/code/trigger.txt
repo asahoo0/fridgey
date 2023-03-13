@@ -1,0 +1,8 @@
+CREATE TRIGGER DISCOUNT
+	BEFORE INSERT ON INGREDIENT
+	FOR EACH ROW
+	BEGIN
+		IF new.Measurement > 1000 then
+			SET new.Price = (new.Price - new.Price*0.1);
+		END IF;
+	END;

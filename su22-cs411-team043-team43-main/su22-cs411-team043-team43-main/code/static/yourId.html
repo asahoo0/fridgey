@@ -1,0 +1,29 @@
+<html>
+<body>
+<table id='accounts'>
+<tr><th>YourId</th></tr>
+</table>
+<form action = "index.html">
+            <button type="submit">Back</button>
+</form>
+<script>
+        function getId() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200) {
+                                let resp = JSON.parse(xhttp.responseText);
+                                console.log(resp);
+                                let content = '<tr><th>YourId</th></tr>';
+                                resp['users'].forEach(x=>{
+                                content += '<tr><td>'+ x['YourId'] +'</td></tr>'
+                               });
+                                document.getElementById("accounts").innerHTML = content;
+                        }
+                };
+                xhttp.open("GET", "/yourId", true);
+                xhttp.send();
+        }
+        getId();
+</script>
+</body>
+</html>

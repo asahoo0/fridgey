@@ -1,0 +1,41 @@
+<html>
+<head>
+<style>
+table, th, td {
+  border: 0.9px inset;
+}
+</style>
+</head>
+<body>
+        <form>
+            <label for="dname">Dish Name:</label><br>
+            <input type="text" id="dname" name="dname"><br>
+        <button type="button" onClick= "userSearch()">Search</button>
+        </form>
+<form action = "index.html">
+            <button type="submit">Back</button>
+ </form>
+<table id='accounts'>
+<tr><th>FirstName</th><th>LastName</th><th>DishName</th><th>DishId</th><th>Calories</th></tr>
+</table>
+<script>
+        function userSearch() {
+                var a = document.getElementById('dname').value;
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200) {
+                                let resp = JSON.parse(xhttp.responseText);
+                                console.log(resp);
+                                let content = '<tr><th><b>FirstName</b></th><th>LastName</th><th>DishName</th><th>DishId</th><th>Calories</th></tr>';
+                                resp['users'].forEach(x=>{
+                                content += '<tr><td>'+ x['UserFN'] +'</td><td>'+ x['UserLN'] +'</td><td>'+ x['DishName'] +'</td><td>'+ x['DishId'] +'</td><td>'+ x['Calories'] +'</td><tr>'
+                               });
+                                document.getElementById("accounts").innerHTML = content;
+                        }
+                };
+                xhttp.open("GET", "/dishSearch?dname="+a, true);
+                xhttp.send();
+        }
+</script>
+</body>
+</html>
